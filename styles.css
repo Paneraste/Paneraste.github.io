@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.left {
+    width: 30%;
+    background-color: #333333;
+    color: white;
+    padding: 20px;
+    float: left;
+}
+
+.right {
+    width: 70%;
+    padding: 20px;
+    float: right;
+}
+
+.name {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.name,h3 {
+    text-shadow: 0 0 0.2em #f78e00, 0 0 0.4em #c7b0b0;
+}
+
+.birthdate {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 20 auto;
+    box-shadow: 0 6px 20px 0 rgb(0 0 0);
+}
+.photo, img{
+    width:130px;
+    height:auto;
+    transition: transform 0.3s ease;
+}
+
+.photo img:hover {
+    transform: rotate(360deg);
+  }
+
+.section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #f78e00;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 6px 20px 0 rgb(255 88 0 / 45%); 
+    border-radius: 6px;
+}
+
+.section-content {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.section-content ul {
+    list-style: none;
+}
+
+.section-content li {
+    margin-bottom: 10px;
+}
+
+.section-content li:before {
+    content: "•";
+    color: red;
+    margin-right: 10px;
+}
+
+.contact {
+    display: flex;
+    align-items: center;
+}
+
+.contact-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.contact-text {
+    font-size: 18px;
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.left {
+    animation: slide-in 1s ease-out;
+}
+
+.right {
+    animation: fade-in 1s ease-out;
+}
+
+br {
+       color: orange;
+}
