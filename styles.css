@@ -41,6 +41,10 @@ body {
     text-shadow: 0 0 0.2em #f78e00, 0 0 0.4em #c7b0b0;
 }
 
+.name,h3:hover{
+    transform: scale(1.05);
+}
+
 .birthdate {
     font-size: 18px;
     margin-bottom: 20px;
@@ -68,6 +72,10 @@ body {
     margin-bottom: 20px;
 }
 
+.contact-text:hover { 
+    background-color: #444;
+}
+
 .section-title {
     font-size: 24px;
     font-weight: bold;
@@ -79,7 +87,7 @@ body {
 }
 
 .section-content {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 2.0;
 }
 
@@ -87,9 +95,6 @@ body {
     list-style: none;
 }
 
-.section-content li {
-    margin-bottom: 10px;
-}
 
 .section-content li:before {
     content: "•";
@@ -141,6 +146,10 @@ body {
     animation: fade-in 1s ease-out;
 }
 
-br {
-       color: orange;
+li:hover{
+    transform: scale(1.05);
+}
+
+p:hover{
+    transform: scale(1.05);
 }
