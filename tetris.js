@@ -241,6 +241,8 @@ function descer() {
             alert("Game Over!");
             t.inicializarTabuleiro();
             pontos = 0;
+            gameOver = false; // Resetar gameOver para false
+            descer(); // Chamar descer() novamente para fazer a peça descer
         }
         atualizarPontos(); // Atualiza a exibição dos pontos
         atualizarRecorde(); // Atualiza a exibição do recorde
