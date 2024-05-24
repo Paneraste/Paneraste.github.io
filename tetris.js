@@ -14,6 +14,7 @@ class Peca {
                     ['*', '*', '*'],
                     [' ', '*', ' ']
                 ];
+                this.cor = 'cyan';
                 break;
             case 1:
                 this.dim = 4;
@@ -23,6 +24,7 @@ class Peca {
                     ['*', ' ', ' ', ' '],
                     ['*', ' ', ' ', ' ']
                 ];
+                this.cor = 'blue';
                 break;
             case 2:
                 this.dim = 2;
@@ -30,6 +32,7 @@ class Peca {
                     ['*', '*'],
                     ['*', '*']
                 ];
+                this.cor = 'yellow';
                 break;
             case 3:
                 this.dim = 3;
@@ -38,6 +41,7 @@ class Peca {
                     ['*', '*', ' '],
                     [' ', '*', '*']
                 ];
+                this.cor = 'green';
                 break;
             case 4:
                 this.dim = 5;
@@ -48,6 +52,7 @@ class Peca {
                     [' ', ' ', '*', ' ', ' '],
                     [' ', ' ', '*', ' ', ' ']
                 ];
+                this.cor = 'red'
                 break;
         }
     }
