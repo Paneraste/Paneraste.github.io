@@ -2,7 +2,7 @@ class Peca {
     constructor() {
         this.valores = [];
         this.dim = 0;
-        this.cor = 'blue'; // Adiciona a cor padrão
+        this.cor = '#0000FF'; // Cor padrão (azul)
     }
 
     inicializarPeca() {
@@ -15,7 +15,7 @@ class Peca {
                     ['*', '*', '*'],
                     [' ', '*', ' ']
                 ];
-                this.cor = '#8b0000'; // Cor da peça
+                this.cor = '#00FFFF'; // Ciano
                 break;
             case 1:
                 this.dim = 4;
@@ -23,9 +23,9 @@ class Peca {
                     ['*', ' ', ' ', ' '],
                     ['*', ' ', ' ', ' '],
                     ['*', ' ', ' ', ' '],
-                    ['*', ' ', ' ', ' ']
+                    ['*', ' ', ' ', ' '],
                 ];
-                this.cor = '#98fb98'; // Cor da peça
+                this.cor = '#0000FF'; // Azul
                 break;
             case 2:
                 this.dim = 2;
@@ -33,7 +33,7 @@ class Peca {
                     ['*', '*'],
                     ['*', '*']
                 ];
-                this.cor = '#daa520'; // Cor da peça
+                this.cor = '#FFFF00'; // Amarelo
                 break;
             case 3:
                 this.dim = 3;
@@ -42,7 +42,7 @@ class Peca {
                     ['*', '*', ' '],
                     [' ', '*', '*']
                 ];
-                this.cor = 'green'; // Cor da peça
+                this.cor = '#00FF00'; // Verde
                 break;
             case 4:
                 this.dim = 5;
@@ -53,7 +53,7 @@ class Peca {
                     [' ', ' ', '*', ' ', ' '],
                     [' ', ' ', '*', ' ', ' ']
                 ];
-                this.cor = '#7fffd4'; // Cor da peça
+                this.cor = '#FF00FF'; // Magenta
                 break;
         }
     }
@@ -89,7 +89,6 @@ class Peca {
     }
 }
 
-
 class Tabuleiro {
     constructor(colunas, linhas) {
         this.colunas = colunas;
@@ -107,15 +106,27 @@ class Tabuleiro {
         }
     }
 
-    desenharTabuleiro(ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < this.linhas; i++) {
-            for (let j = 0; j < this.colunas; j++) {
-                if (this.valores[i][j] !== ' ') {
-                    ctx.fillStyle = this.cores[i][j];  // Cor das peças
-                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
-                    ctx.strokeStyle = 'black';  // Cor das bordas das células
-                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+    marcarPeca(x, y, p) {
+        for (let i = 0; i < p.dim; i++) {
+            for (let j = 0; j < p.dim; j++) {
+                if (p.valores[i][j] !== ' ' &&
+                    i + y >= 0 && i + y < this.linhas &&
+                    j + x >= 0 && j + x < this.colunas) {
+                    this.valores[i + y][j + x] = p.valores[i][j];
+                    this.cores[i + y][j + x] = p.cor; // Define a cor da peça
+                }
+            }
+        }
+    }
+
+    apagarPeca(x, y, p) {
+        for (let i = 0; i < p.dim; i++) {
+            for (let j = 0; j < p.dim; j++) {
+                if (p.valores[i][j] !== ' ' &&
+                    i + y >= 0 && i + y < this.linhas &&
+                    j + x >= 0 && j + x < this.colunas) {
+                    this.valores[i + y][j + x] = ' ';
+                    this.cores[i + y][j + x] = ''; // Limpa a cor
                 }
             }
         }
@@ -147,32 +158,6 @@ class Tabuleiro {
         return linhasCompletas.length;
     }
 
-    apagarPeca(x, y, p) {
-        for (let i = 0; i < p.dim; i++) {
-            for (let j = 0; j < p.dim; j++) {
-                if (p.valores[i][j] !== ' ' &&
-                    i + y >= 0 && i + y < this.linhas &&
-                    j + x >= 0 && j + x < this.colunas) {
-                    this.valores[i + y][j + x] = ' ';
-                    this.cores[i + y][j + x] = ''; // Limpa a cor
-                }
-            }
-        }
-    }
-
-    marcarPeca(x, y, p) {
-        for (let i = 0; i < p.dim; i++) {
-            for (let j = 0; j < p.dim; j++) {
-                if (p.valores[i][j] !== ' ' &&
-                    i + y >= 0 && i + y < this.linhas &&
-                    j + x >= 0 && j + x < this.colunas) {
-                    this.valores[i + y][j + x] = p.valores[i][j];
-                    this.cores[i + y][j + x] = p.cor; // Define a cor da peça
-                }
-            }
-        }
-    }
-
     encaixa(x, y, p) {
         for (let i = 0; i < p.dim; i++) {
             for (let j = 0; j < p.dim; j++) {
@@ -185,16 +170,29 @@ class Tabuleiro {
         }
         return true;
     }
+
+    desenharTabuleiro(ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < this.linhas; i++) {
+            for (let j = 0; j < this.colunas; j++) {
+                if (this.valores[i][j] !== ' ') {
+                    ctx.fillStyle = this.cores[i][j] || '#0000FF';  // Cor das peças
+
+                    // Desenha a peça com sombra
+                    ctx.shadowColor = this.cores[i][j]; // Cor do glow
+                    ctx.shadowBlur = 20; // Intensidade do glow
+
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+
+                    // Desenha a borda da célula
+                    ctx.shadowBlur = 0; // Remove o efeito de sombra para a borda
+                    ctx.strokeStyle = 'black';  // Cor das bordas das células
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+    }
 }
-
-
-// Desce a peça sozinha
-setInterval(() => {
-    t.apagarPeca(x, y, p);
-    descer();
-    t.marcarPeca(x, y, p);
-    t.desenharTabuleiro(ctx);
-}, 1000);
 
 // Variáveis globais
 const canvas = document.getElementById('game-board');
@@ -224,10 +222,9 @@ function atualizarRecorde() {
 
 // Função para descer a peça
 function descer() {
+    t.apagarPeca(x, y, p);
     if (t.encaixa(x, y + 1, p)) {
-        t.apagarPeca(x, y, p);
         y++;
-        t.marcarPeca(x, y, p);
     } else {
         t.marcarPeca(x, y, p);
         const linhasEliminadas = t.eliminarLinhas();
@@ -248,8 +245,10 @@ function descer() {
         atualizarPontos(); // Atualiza a exibição dos pontos
         atualizarRecorde(); // Atualiza a exibição do recorde
     }
+    t.marcarPeca(x, y, p);
 }
 
+// Inicializa o jogo
 document.addEventListener('DOMContentLoaded', () => {
     p.inicializarPeca();
     t.inicializarTabuleiro();
@@ -257,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
     t.desenharTabuleiro(ctx);
     atualizarPontos();
     atualizarRecorde();
-    gameLoop(); // Inicia o loop principal
 });
 
 document.addEventListener('keydown', (e) => {
@@ -297,3 +295,11 @@ document.getElementById('btnesq').addEventListener('click', () => {
     t.marcarPeca(x, y, p);
     t.desenharTabuleiro(ctx);
 });
+
+// Atualização automática do tabuleiro a cada segundo
+setInterval(() => {
+    if (!gameOver) {
+        descer();
+        t.desenharTabuleiro(ctx);
+    }
+}, 1000);
