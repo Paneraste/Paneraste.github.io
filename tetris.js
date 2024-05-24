@@ -15,7 +15,7 @@ class Peca {
                     ['*', '*', '*'],
                     [' ', '*', ' ']
                 ];
-                this.cor = 'cyan'; // Cor da peça
+                this.cor = '#8b0000'; // Cor da peça
                 break;
             case 1:
                 this.dim = 4;
@@ -25,7 +25,7 @@ class Peca {
                     ['*', ' ', ' ', ' '],
                     ['*', ' ', ' ', ' ']
                 ];
-                this.cor = 'blue'; // Cor da peça
+                this.cor = '#98fb98'; // Cor da peça
                 break;
             case 2:
                 this.dim = 2;
@@ -33,7 +33,7 @@ class Peca {
                     ['*', '*'],
                     ['*', '*']
                 ];
-                this.cor = 'yellow'; // Cor da peça
+                this.cor = '#daa520'; // Cor da peça
                 break;
             case 3:
                 this.dim = 3;
@@ -53,7 +53,7 @@ class Peca {
                     [' ', ' ', '*', ' ', ' '],
                     [' ', ' ', '*', ' ', ' ']
                 ];
-                this.cor = 'red'; // Cor da peça
+                this.cor = '#7fffd4'; // Cor da peça
                 break;
         }
     }
