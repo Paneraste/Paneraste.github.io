@@ -12,11 +12,15 @@
             background-color: #000;
         }
 
+        #canvas-container {
+            position: relative;
+        }
+
         #game-board {
             border: 1px solid #fff;
         }
 
-        #pontuacao, #recorde {
+        #pontos {
             color: #fff;
             font-size: 24px;
             margin-top: 20px;
@@ -24,9 +28,11 @@
     </style>
 </head>
 <body>
-    <canvas id="game-board" width="300" height="600"></canvas>
+    <div id="canvas-container">
+        <canvas id="game-board" width="300" height="600"></canvas>
+    </div>
+    <div id="pontos"></div>
     <div id="pontuacao"></div>
-    <div id="recorde"></div>
     <button id="btndir">⟳</button>
     <button id="btnesq">⟲</button>
     <script src="tetris.js"></script>
