@@ -2,6 +2,7 @@ class Peca {
     constructor() {
         this.valores = [];
         this.dim = 0;
+        this.cor = 'blue'; // Adiciona a cor padrão
     }
 
     inicializarPeca() {
@@ -14,7 +15,7 @@ class Peca {
                     ['*', '*', '*'],
                     [' ', '*', ' ']
                 ];
-                this.cor = 'cyan';
+                this.cor = 'cyan'; // Cor da peça
                 break;
             case 1:
                 this.dim = 4;
@@ -24,7 +25,7 @@ class Peca {
                     ['*', ' ', ' ', ' '],
                     ['*', ' ', ' ', ' ']
                 ];
-                this.cor = 'blue';
+                this.cor = 'blue'; // Cor da peça
                 break;
             case 2:
                 this.dim = 2;
@@ -32,7 +33,7 @@ class Peca {
                     ['*', '*'],
                     ['*', '*']
                 ];
-                this.cor = 'yellow';
+                this.cor = 'yellow'; // Cor da peça
                 break;
             case 3:
                 this.dim = 3;
@@ -41,7 +42,7 @@ class Peca {
                     ['*', '*', ' '],
                     [' ', '*', '*']
                 ];
-                this.cor = 'green';
+                this.cor = 'green'; // Cor da peça
                 break;
             case 4:
                 this.dim = 5;
@@ -52,7 +53,7 @@ class Peca {
                     [' ', ' ', '*', ' ', ' '],
                     [' ', ' ', '*', ' ', ' ']
                 ];
-                this.cor = 'red'
+                this.cor = 'red'; // Cor da peça
                 break;
         }
     }
@@ -88,17 +89,20 @@ class Peca {
     }
 }
 
+
 class Tabuleiro {
     constructor(colunas, linhas) {
         this.colunas = colunas;
         this.linhas = linhas;
         this.valores = Array.from({ length: linhas }, () => Array(colunas).fill(' '));
+        this.cores = Array.from({ length: linhas }, () => Array(colunas).fill(''));
     }
 
     inicializarTabuleiro() {
         for (let i = 0; i < this.linhas; i++) {
             for (let j = 0; j < this.colunas; j++) {
                 this.valores[i][j] = ' ';
+                this.cores[i][j] = '';
             }
         }
     }
@@ -108,7 +112,7 @@ class Tabuleiro {
         for (let i = 0; i < this.linhas; i++) {
             for (let j = 0; j < this.colunas; j++) {
                 if (this.valores[i][j] !== ' ') {
-                    ctx.fillStyle = 'blue';  // Cor das peças
+                    ctx.fillStyle = this.cores[i][j];  // Cor das peças
                     ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
                     ctx.strokeStyle = 'black';  // Cor das bordas das células
                     ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
@@ -132,9 +136,12 @@ class Tabuleiro {
             }
         }
 
+        // Remover todas as linhas completas identificadas
         for (let i = linhasCompletas.length - 1; i >= 0; i--) {
             this.valores.splice(linhasCompletas[i], 1);
             this.valores.unshift(Array(this.colunas).fill(' '));
+            this.cores.splice(linhasCompletas[i], 1);
+            this.cores.unshift(Array(this.colunas).fill(''));
         }
 
         return linhasCompletas.length;
@@ -147,6 +154,7 @@ class Tabuleiro {
                     i + y >= 0 && i + y < this.linhas &&
                     j + x >= 0 && j + x < this.colunas) {
                     this.valores[i + y][j + x] = ' ';
+                    this.cores[i + y][j + x] = ''; // Limpa a cor
                 }
             }
         }
@@ -158,7 +166,8 @@ class Tabuleiro {
                 if (p.valores[i][j] !== ' ' &&
                     i + y >= 0 && i + y < this.linhas &&
                     j + x >= 0 && j + x < this.colunas) {
-                    this.valores[i + y][j + x] = 'blue';
+                    this.valores[i + y][j + x] = p.valores[i][j];
+                    this.cores[i + y][j + x] = p.cor; // Define a cor da peça
                 }
             }
         }
@@ -177,6 +186,7 @@ class Tabuleiro {
         return true;
     }
 }
+
 
 // Desce a peça sozinha
 setInterval(() => {
