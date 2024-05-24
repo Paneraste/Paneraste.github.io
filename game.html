@@ -25,16 +25,57 @@
             font-size: 24px;
             margin-top: 20px;
         }
+
+        #record-table {
+            position: absolute;
+            left: 0;
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            background-size: 400% 200%;
+            animation: neon 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgb(255, 145, 0);
+        }
+
+        #record-table p {
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        #score-box {
+            position: absolute;
+            right: 0;
+            width: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: neon 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgb(255, 0, 242);
+        }
+
+        #score-box p {
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
     <div id="canvas-container">
         <canvas id="game-board" width="300" height="600"></canvas>
+        <div id="score-box">
+            <p id="pontuacao">Pontuação: 0</p>
+        </div>
     </div>
-    <div id="pontos"></div>
-    <div id="pontuacao"></div>
-    <button id="btndir">⟳</button>
-    <button id="btnesq">⟲</button>
+    <div id="record-table">
+        <p id="recorde1">1. Jogador 1 - 1000</p>
+        <p id="recorde2">2. Jogador 2 - 500</p>
+        <p id="recorde3">3. Jogador 3 - 250</p>
+    </div>
+    <button id="btndir">⟳</button<button id="btnesq">⟲</button>
     <script src="tetris.js"></script>
 </body>
 </html>
