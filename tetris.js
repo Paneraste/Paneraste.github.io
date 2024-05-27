@@ -135,7 +135,7 @@ class Tabuleiro {
     }
 
     eliminarLinhas() {
-        let linhasCompletas = [];
+        let linhasPreenchidas = [];
         for (let i = 0; i < this.linhas; i++) {
             let linhaCompleta = true;
             for (let j = 0; j < this.colunas; j++) {
@@ -145,19 +145,21 @@ class Tabuleiro {
                 }
             }
             if (linhaCompleta) {
-                linhasCompletas.push(i);
+                linhasPreenchidas.push(i);
             }
         }
-
-        // Remover todas as linhas completas identificadas
-        for (let i = linhasCompletas.length - 1; i >= 0; i--) {
-            this.valores.splice(linhasCompletas[i], 1);
+    
+        for (let i = linhasPreenchidas.length - 1; i >= 0; i--) {
+            this.valores.splice(linhasPreenchidas[i], 1);
             this.valores.unshift(Array(this.colunas).fill(' '));
-            this.cores.splice(linhasCompletas[i], 1);
+            this.cores.splice(linhasPreenchidas[i], 1);
             this.cores.unshift(Array(this.colunas).fill(''));
         }
-
-        return linhasCompletas.length;
+    
+        let linhasRemovidas = linhasPreenchidas.length;
+        pontuacao += linhasRemovidas * 100;
+    
+        return linhasRemovidas;
     }
 
     encaixa(x, y, p) {
@@ -208,10 +210,19 @@ let x = Math.floor(boardWidth / 2) - Math.floor(p.dim / 2);
 let y = 0;
 let gameOver = false;
 let pontuacao = 0;
+let paused = false; // Variável para controlar o estado do jogo (pausado ou não)
+
+
 
 const nameInputContainer = document.getElementById('name-input-container');
 const playerNameInput = document.getElementById('player-name');
 const saveNameButton = document.getElementById('save-name');
+
+function descerAutomatico() {
+    if (!gameOver && !paused) {
+        descer();
+    }
+}
 
 // Funções para gerenciar recordes
 function carregarRecordes() {
@@ -306,6 +317,22 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarTabelaRecordes();
 });
 
+document.getElementById('btnpause').addEventListener('click', () => {
+    if (gameOver) return; // Se o jogo já estiver encerrado, não faz nada
+    const pauseButton = document.getElementById('btnpause');
+    if (paused) {
+        // Se o jogo estiver pausado, retome o jogo
+        paused = false;
+        pauseButton.textContent = 'Pausar';
+        descerAutomatico(); // Reinicie a função de atualização automática do tabuleiro
+    } else {
+        // Se o jogo não estiver pausado, pause o jogo
+        paused = true;
+        pauseButton.textContent = 'Retomar';
+        clearInterval(descerAutomaticoInterval); // Pare a função de atualização automática do tabuleiro
+    }
+});
+
 document.addEventListener('keydown', (e) => {
     t.apagarPeca(x, y, p);
     switch (e.keyCode) {
@@ -369,7 +396,7 @@ document.getElementById('btndown').addEventListener('click', () => {
 // Atualização automática do tabuleiro a cada segundo
 setInterval(() => {
     if (!gameOver) {
-        descer();
+        descerAutomatico(); // Chame a função de atualização automática do tabuleiro
         t.desenharTabuleiro(ctx);
     }
 }, 1000);
