@@ -109,11 +109,13 @@ class Tabuleiro {
     marcarPeca(x, y, p) {
         for (let i = 0; i < p.dim; i++) {
             for (let j = 0; j < p.dim; j++) {
-                if (p.valores[i][j] !== ' ' &&
-                    i + y >= 0 && i + y < this.linhas &&
-                    j + x >= 0 && j + x < this.colunas) {
-                    this.valores[i + y][j + x] = p.valores[i][j];
-                    this.cores[i + y][j + x] = p.cor; // Define a cor da peça
+                if (p.valores[i][j] !== ' ') {
+                    const row = y + i;
+                    const col = x + j;
+                    if (row >= 0 && row < this.linhas && col >= 0 && col < this.colunas) {
+                        this.valores[row][col] = p.valores[i][j];
+                        this.cores[row][col] = p.cor;
+                    }
                 }
             }
         }
@@ -204,20 +206,50 @@ const p = new Peca();
 const t = new Tabuleiro(boardWidth, boardHeight);
 let x = Math.floor(boardWidth / 2) - Math.floor(p.dim / 2);
 let y = 0;
-let pontos = 0;
 let gameOver = false;
-let recorde = localStorage.getItem('recorde') || 0; // Recupera o recorde armazenado localmente
+let pontuacao = 0;
 
-// Função para atualizar a pontuação
-function atualizarPontos() {
-    const pontuacaoElement = document.getElementById('pontuacao');
-    pontuacaoElement.textContent = `Pontuação: ${pontos}`;
+const nameInputContainer = document.getElementById('name-input-container');
+const playerNameInput = document.getElementById('player-name');
+const saveNameButton = document.getElementById('save-name');
+
+// Funções para gerenciar recordes
+function carregarRecordes() {
+    const recordes = JSON.parse(localStorage.getItem('recordes')) || [
+        { nome: 'Jogador 1', pontos: 1000 },
+        { nome: 'Jogador 2', pontos: 500 },
+        { nome: 'Jogador 3', pontos: 250 }
+    ];
+    return recordes;
 }
 
-// Função para atualizar o recorde
-function atualizarRecorde() {
-    const recordeElement = document.getElementById('recorde');
-    recordeElement.textContent = `Recorde: ${recorde}`;
+function salvarRecordes(recordes) {
+    localStorage.setItem('recordes', JSON.stringify(recordes));
+}
+
+function atualizarTabelaRecordes() {
+    const recordes = carregarRecordes();
+    for (let i = 0; i < recordes.length; i++) {
+        document.getElementById(`recorde${i + 1}`).textContent = `${i + 1}. ${recordes[i].nome} - ${recordes[i].pontos}`;
+    }
+}
+
+function checarNovoRecorde() {
+    const recordes = carregarRecordes();
+    for (let i = 0; i < recordes.length; i++) {
+        if (pontuacao > recordes[i].pontos) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function adicionarNovoRecorde(posicao, nome, pontos) {
+    const recordes = carregarRecordes();
+    recordes.splice(posicao, 0, { nome, pontos });
+    recordes.pop(); // Mantém apenas os 3 melhores
+    salvarRecordes(recordes);
+    atualizarTabelaRecordes();
 }
 
 // Função para descer a peça
@@ -227,27 +259,42 @@ function descer() {
         y++;
     } else {
         t.marcarPeca(x, y, p);
-        const linhasEliminadas = t.eliminarLinhas();
-        pontos += linhasEliminadas * 100; // Pontuação baseada no número de linhas eliminadas
-        if (pontos > recorde) {
-            recorde = pontos;
-            localStorage.setItem('recorde', recorde); // Atualiza o recorde localmente
-        }
+        pontuacao += t.eliminarLinhas() * 100; // Atualiza pontuação ao eliminar linhas
+        document.getElementById('pontuacao').textContent = `Pontuação: ${pontuacao}`;
         p.inicializarPeca();
         x = Math.floor(boardWidth / 2) - Math.floor(p.dim / 2);
         y = 0;
         if (!t.encaixa(x, y, p)) {
             gameOver = true;
-            alert("Game Over!");
-            t.inicializarTabuleiro();
-            pontos = 0;
-            gameOver = false; // Resetar gameOver para false
-            descer(); // Chamar descer() novamente para fazer a peça descer
+            const posicaoRecorde = checarNovoRecorde();
+            if (posicaoRecorde >= 0) {
+                nameInputContainer.style.display = 'flex';
+                saveNameButton.onclick = () => {
+                    const nome = playerNameInput.value.trim();
+                    if (nome) {
+                        adicionarNovoRecorde(posicaoRecorde, nome, pontuacao);
+                        nameInputContainer.style.display = 'none';
+                        playerNameInput.value = '';
+                        resetGame();
+                    }
+                };
+            } else {
+                alert("Game Over!");
+                resetGame();
+            }
         }
-        atualizarPontos(); // Atualiza a exibição dos pontos
-        atualizarRecorde(); // Atualiza a exibição do recorde
     }
     t.marcarPeca(x, y, p);
+}
+
+function resetGame() {
+    t.inicializarTabuleiro();
+    p.inicializarPeca();
+    x = Math.floor(boardWidth / 2) - Math.floor(p.dim / 2);
+    y = 0;
+    pontuacao = 0;
+    document.getElementById('pontuacao').textContent = `Pontuação: ${pontuacao}`;
+    gameOver = false;
 }
 
 // Inicializa o jogo
@@ -256,8 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     t.inicializarTabuleiro();
     t.marcarPeca(x, y, p);
     t.desenharTabuleiro(ctx);
-    atualizarPontos();
-    atualizarRecorde();
+    atualizarTabelaRecordes();
 });
 
 document.addEventListener('keydown', (e) => {
@@ -294,6 +340,28 @@ document.getElementById('btnesq').addEventListener('click', () => {
     t.apagarPeca(x, y, p);
     p.rotacionarEsquerda();
     if (!t.encaixa(x, y, p)) p.rotacionarDireita();
+    t.marcarPeca(x, y, p);
+    t.desenharTabuleiro(ctx);
+});
+//botões de movimentação
+document.getElementById('btnleft').addEventListener('click', () => {
+    t.apagarPeca(x, y, p);
+    if (t.encaixa(x - 1, y, p)) x--;
+    t.marcarPeca(x, y, p);
+    t.desenharTabuleiro(ctx);
+});
+
+document.getElementById('btnright').addEventListener('click', () => {
+    t.apagarPeca(x, y, p);
+    if (t.encaixa(x + 1, y, p)) x++;
+    t.marcarPeca(x, y, p);
+    t.desenharTabuleiro(ctx);
+});
+
+//desce mais rapido
+document.getElementById('btndown').addEventListener('click', () => {
+    t.apagarPeca(x, y, p);
+    descer();
     t.marcarPeca(x, y, p);
     t.desenharTabuleiro(ctx);
 });
