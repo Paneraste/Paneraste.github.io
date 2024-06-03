@@ -1,76 +1,39 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #000;
+  background-color: #333;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
 }
-
-#canvas-container {
-    position: relative;
+.container {
+  text-align: center;
 }
-
-#game-board {
-    border: 1px solid #fff;
+h1 {
+  font-size: 3em;
+  margin-bottom: 0.5em;
 }
-
-#pontos {
-    color: #fff;
-    font-size: 24px;
-    margin-top: 20px;
+p {
+  font-size: 1.2em;
+  margin-bottom: 1em;
 }
-
-#record-table {
-    position: absolute;
-    left: 0;
-    width: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    background-size: 400% 200%;
-    animation: neon 2s ease-in-out infinite;
-    box-shadow: 0 0 10px rgb(255, 145, 0);
+button {
+  background-color: #fff;
+  color: #333;
+  border: none;
+  padding: 0.5em 1em;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-
-#record-table p {
-    color: #fff;
-    font-size: 18px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+button:hover {
+  background-color: #ccc;
 }
-
-#score-box {
-    position: absolute;
-    right: 0;
-    width: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: neon 2s ease-in-out infinite;
-    box-shadow: 0 0 10px rgb(255, 0, 242);
-}
-
-#score-box p {
-    color: #fff;
-    font-size: 24px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-#name-input-container {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-}
-
-#name-input-container input {
-    margin-bottom: 10px;
-    padding: 5px;
-    font-size: 18px;
-}
-
-#name-input-container button {
-    padding: 5px 10px;
-    font-size: 18px;
+#sobre {
+  margin-top: 30px;
+  align-items: end;
+  font-size: 24px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  justify-content: center;
 }

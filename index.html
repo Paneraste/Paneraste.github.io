@@ -4,46 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetris</title>
-  <style>
-    body {
-      background-color: #333;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      text-align: center;
-    }
-    h1 {
-      font-size: 3em;
-      margin-bottom: 0.5em;
-    }
-    p {
-      font-size: 1.2em;
-      margin-bottom: 1em;
-    }
-    button {
-      background-color: #fff;
-      color: #333;
-      border: none;
-      padding: 0.5em 1em;
-      font-size: 1.2em;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #ccc;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
     <h1>Tetris</h1>
     <p>Clique no botão abaixo para iniciar o jogo!</p>
     <button onclick="window.location.href='game.html'">Jogar</button>
+    <div id="sobre">
+      <a href="about.html">Sobre</a>
+    </div>
   </div>
+
+  <!-- Adicione os scripts do Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYNEco78gDJMUo_B-PsrSQrPoc5Bm6fCA",
+      authDomain: "ucptetris.firebaseapp.com",
+      projectId: "ucptetris",
+      storageBucket: "ucptetris.appspot.com",
+      messagingSenderId: "133247975489",
+      appId: "1:133247975489:web:8ca132b30afc5e56c406c0",
+      measurementId: "G-KRW120LFTS"
+    };
+
+    // Inicializar o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </body>
 </html>

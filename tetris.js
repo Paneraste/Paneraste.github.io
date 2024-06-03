@@ -1,3 +1,6 @@
+import { firestore } from './firebase.js';
+import { collection, doc, query, orderBy, limit, getDocs, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
 class Peca {
     constructor() {
         this.valores = [];
@@ -135,30 +138,31 @@ class Tabuleiro {
     }
 
     eliminarLinhas() {
-        let linhasPreenchidas = [];
+        let linhasRemovidas = 0;
         for (let i = 0; i < this.linhas; i++) {
-            let linhaCompleta = true;
+            let completa = true;
             for (let j = 0; j < this.colunas; j++) {
                 if (this.valores[i][j] === ' ') {
-                    linhaCompleta = false;
+                    completa = false;
                     break;
                 }
             }
-            if (linhaCompleta) {
-                linhasPreenchidas.push(i);
+            if (completa) {
+                linhasRemovidas++;
+                for (let k = i; k > 0; k--) {
+                    for (let j = 0; j < this.colunas; j++) {
+                        this.valores[k][j] = this.valores[k-1][j];
+                        this.cores[k][j] = this.cores[k-1][j];
+                    }
+                }
+                for (let j = 0; j < this.colunas; j++) {
+                    this.valores[0][j] = ' ';
+                    this.cores[0][j] = ''; // Reseta a cor
+                }
             }
         }
-    
-        for (let i = linhasPreenchidas.length - 1; i >= 0; i--) {
-            this.valores.splice(linhasPreenchidas[i], 1);
-            this.valores.unshift(Array(this.colunas).fill(' '));
-            this.cores.splice(linhasPreenchidas[i], 1);
-            this.cores.unshift(Array(this.colunas).fill(''));
-        }
-    
-        let linhasRemovidas = linhasPreenchidas.length;
-        pontuacao += linhasRemovidas * 100;
-    
+        
+        pontuacao += linhasRemovidas * 100; // Atualiza a pontuação
         return linhasRemovidas;
     }
 
@@ -198,10 +202,11 @@ class Tabuleiro {
     }
 }
 
+
 // Variáveis globais
 const canvas = document.getElementById('game-board');
 const ctx = canvas.getContext('2d');
-const cellSize = 20;
+const cellSize = 30;
 const boardWidth = Math.floor(canvas.width / cellSize);
 const boardHeight = Math.floor(canvas.height / cellSize);
 const p = new Peca();
@@ -212,59 +217,65 @@ let gameOver = false;
 let pontuacao = 0;
 let paused = false; // Variável para controlar o estado do jogo (pausado ou não)
 
-
-
 const nameInputContainer = document.getElementById('name-input-container');
 const playerNameInput = document.getElementById('player-name');
 const saveNameButton = document.getElementById('save-name');
 
-function descerAutomatico() {
-    if (!gameOver && !paused) {
-        descer();
-    }
-}
-
-// Funções para gerenciar recordes
-function carregarRecordes() {
-    const recordes = JSON.parse(localStorage.getItem('recordes')) || [
-        { nome: 'Jogador 1', pontos: 1000 },
-        { nome: 'Jogador 2', pontos: 500 },
-        { nome: 'Jogador 3', pontos: 250 }
-    ];
+// Funções de recordes
+async function carregarRecordes() {
+    const recordesRef = collection(firestore, 'recordes');
+    const q = query(recordesRef, orderBy('pontos', 'desc'), limit(3));
+    const querySnapshot = await getDocs(q);
+    const recordes = [];
+    querySnapshot.forEach((doc) => {
+        recordes.push(doc.data());
+    });
     return recordes;
 }
 
-function salvarRecordes(recordes) {
-    localStorage.setItem('recordes', JSON.stringify(recordes));
+async function salvarRecorde(nome, pontos) {
+    await setDoc(doc(firestore, 'recordes', 'record_' + nome), {
+        nome: nome,
+        pontos: pontos
+    });
 }
 
-function atualizarTabelaRecordes() {
-    const recordes = carregarRecordes();
-    for (let i = 0; i < recordes.length; i++) {
-        document.getElementById(`recorde${i + 1}`).textContent = `${i + 1}. ${recordes[i].nome} - ${recordes[i].pontos}`;
-    }
+async function adicionarNovoRecorde(nome, pontos) {
+    await salvarRecorde(nome, pontos);
+    await atualizarTabelaRecordes();
 }
 
-function checarNovoRecorde() {
-    const recordes = carregarRecordes();
+async function checarNovoRecorde(pontos) {
+    const recordesRef = collection(firestore, 'recordes');
+    const q = query(recordesRef, orderBy('pontos', 'asc'), limit(1));
+    const querySnapshot = await getDocs(q);
+    let menorRecorde = 0;
+    querySnapshot.forEach((doc) => {
+        menorRecorde = doc.data().pontos;
+    });
+    // Retorna true se a pontuação for maior que o menor recorde ou se não há recordes
+    return pontos > menorRecorde || querySnapshot.empty;
+}
+
+async function atualizarTabelaRecordes() {
+    const recordes = await carregarRecordes();
     for (let i = 0; i < recordes.length; i++) {
-        if (pontuacao > recordes[i].pontos) {
-            return i;
+        const recordeElement = document.getElementById(`recorde${i + 1}`);
+        if (recordeElement) {
+            recordeElement.textContent = `${i + 1}. ${recordes[i].nome} - ${recordes[i].pontos}`;
         }
     }
-    return -1;
 }
-
-function adicionarNovoRecorde(posicao, nome, pontos) {
-    const recordes = carregarRecordes();
-    recordes.splice(posicao, 0, { nome, pontos });
-    recordes.pop(); // Mantém apenas os 3 melhores
-    salvarRecordes(recordes);
-    atualizarTabelaRecordes();
-}
+//---------------------------------------------
+  // Função para descer automaticamente
+  function descerAutomatico() {
+    if (!gameOver && !paused) {
+      descer();
+    }
+  }
 
 // Função para descer a peça
-function descer() {
+async function descer() {
     t.apagarPeca(x, y, p);
     if (t.encaixa(x, y + 1, p)) {
         y++;
@@ -277,13 +288,13 @@ function descer() {
         y = 0;
         if (!t.encaixa(x, y, p)) {
             gameOver = true;
-            const posicaoRecorde = checarNovoRecorde();
-            if (posicaoRecorde >= 0) {
+            const novoRecorde = await checarNovoRecorde(pontuacao);
+            if (novoRecorde) {
                 nameInputContainer.style.display = 'flex';
-                saveNameButton.onclick = () => {
+                saveNameButton.onclick = async () => {
                     const nome = playerNameInput.value.trim();
                     if (nome) {
-                        adicionarNovoRecorde(posicaoRecorde, nome, pontuacao);
+                        await adicionarNovoRecorde(nome, pontuacao);
                         nameInputContainer.style.display = 'none';
                         playerNameInput.value = '';
                         resetGame();
@@ -329,11 +340,11 @@ document.getElementById('btnpause').addEventListener('click', () => {
         // Se o jogo não estiver pausado, pause o jogo
         paused = true;
         pauseButton.textContent = 'Retomar';
-        clearInterval(descerAutomaticoInterval); // Pare a função de atualização automática do tabuleiro
     }
 });
 
 document.addEventListener('keydown', (e) => {
+    if (paused) return; // Não permite movimentação se o jogo estiver pausado
     t.apagarPeca(x, y, p);
     switch (e.keyCode) {
         case 37: // Esquerda
@@ -356,6 +367,7 @@ document.addEventListener('keydown', (e) => {
 
 // Botões de rotação
 document.getElementById('btndir').addEventListener('click', () => {
+    if (paused) return; // Não permite rotação se o jogo estiver pausado
     t.apagarPeca(x, y, p);
     p.rotacionarDireita();
     if (!t.encaixa(x, y, p)) p.rotacionarEsquerda();
@@ -364,6 +376,7 @@ document.getElementById('btndir').addEventListener('click', () => {
 });
 
 document.getElementById('btnesq').addEventListener('click', () => {
+    if (paused) return; // Não permite rotação se o jogo estiver pausado
     t.apagarPeca(x, y, p);
     p.rotacionarEsquerda();
     if (!t.encaixa(x, y, p)) p.rotacionarDireita();
@@ -372,6 +385,7 @@ document.getElementById('btnesq').addEventListener('click', () => {
 });
 //botões de movimentação
 document.getElementById('btnleft').addEventListener('click', () => {
+    if (paused) return; // Não permite movimentação se o jogo estiver pausado
     t.apagarPeca(x, y, p);
     if (t.encaixa(x - 1, y, p)) x--;
     t.marcarPeca(x, y, p);
@@ -379,6 +393,7 @@ document.getElementById('btnleft').addEventListener('click', () => {
 });
 
 document.getElementById('btnright').addEventListener('click', () => {
+    if (paused) return; // Não permite movimentação se o jogo estiver pausado
     t.apagarPeca(x, y, p);
     if (t.encaixa(x + 1, y, p)) x++;
     t.marcarPeca(x, y, p);
@@ -387,6 +402,7 @@ document.getElementById('btnright').addEventListener('click', () => {
 
 //desce mais rapido
 document.getElementById('btndown').addEventListener('click', () => {
+    if (paused) return; // Não permite descida se o jogo estiver pausado
     t.apagarPeca(x, y, p);
     descer();
     t.marcarPeca(x, y, p);
@@ -399,4 +415,56 @@ setInterval(() => {
         descerAutomatico(); // Chame a função de atualização automática do tabuleiro
         t.desenharTabuleiro(ctx);
     }
-}, 1000);
+}, 250);
+
+// cena
+//================================================================================
+
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
+
+// Configuração básica da cena
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+const particleContainer = document.getElementById('particle-background');
+renderer.setSize(window.innerWidth, window.innerHeight);
+particleContainer.appendChild(renderer.domElement);
+
+// Reposiciona a câmera
+camera.position.z = 5;
+
+// Criação das partículas
+const particleCount = 1000;
+const particles = new THREE.Group();
+scene.add(particles);
+
+const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true });
+
+for (let i = 0; i < particleCount; i++) {
+  const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+  const x = (Math.random() - 0.5) * 20;
+  const y = (Math.random() - 0.5) * 20;
+  const z = (Math.random() - 0.5) * 20;
+  particle.position.set(x, y, z);
+  particle.scale.set(0.3, 0.3, 0.3);
+  particleMaterial.opacity = Math.random() * 0.8 + 0.2;
+  particles.add(particle);
+}
+
+// Animação das partículas
+function animateParticles() {
+  requestAnimationFrame(animateParticles);
+  particles.rotation.y += 0.001;
+  renderer.render(scene, camera);
+}
+
+animateParticles();
+
+// Ajustar o tamanho do renderer ao redimensionar a janela
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});

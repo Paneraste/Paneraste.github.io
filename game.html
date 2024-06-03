@@ -1,157 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Tetris</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #000;
-            flex-direction: column;
-        }
-
-        #canvas-container {
-            position: relative;
-        }
-
-        #game-board {
-            border: 1px solid #fff;
-        }
-
-        #pontos {
-            color: #fff;
-            font-size: 24px;
-            margin-top: 20px;
-        }
-
-        #record-table {
-            position: absolute;
-            left: 0;
-            width: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            background-size: 400% 200%;
-            animation: neon 2s ease-in-out infinite;
-            box-shadow: 0 0 10px rgb(255, 145, 0);
-        }
-
-        #record-table p {
-            color: #fff;
-            font-size: 18px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        #score-box {
-            position: relative;
-            right: 0;
-            width: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: neon 2s ease-in-out infinite;
-            box-shadow: 0 0 10px rgb(255, 0, 242);
-        }
-
-        #score-box p {
-            color: #fff;
-            font-size: 24px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        #name-input-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        #name-input-container input {
-            margin-bottom: 10px;
-            padding: 5px;
-            font-size: 18px;
-        }
-
-        #name-input-container button {
-            padding: 5px 10px;
-            font-size: 18px;
-        }
-
-        .control-buttons {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .control-button {
-            padding: 10px;
-            margin: 0 10px;
-            font-size: 18px;
-            color: #fff;
-            background-color: #333;
-            border: none;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
-
-        .control-button:hover {
-            background-color: #555;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tetris</title>
+  <link rel="stylesheet" href="stylesG.css">
+  <script type="module" src="tetris.js"></script>
 </head>
 <body>
+  <div id="particle-background"></div>
+  <div id="logo-container">
+    <img src="logo.gif" alt="Logo" id="logo">
+  </div>
+  <div id="record-table">
+    <p id="recorde1">1. Jogador 1 - 000</p>
+    <p id="recorde2">2. Jogador 2 - 000</p>
+    <p id="recorde3">3. Jogador 3 - 000</p>
+  </div>
+  <div class="container">
     <div id="canvas-container">
-        <canvas id="game-board" width="300" height="600"></canvas>
-        <div id="score-box">
-            <p id="pontuacao">Pontuação: 0</p>
-        </div>
+      <canvas id="game-board" width="300" height="600"></canvas>
     </div>
-    <div id="record-table">
-        <p id="recorde1">1. Jogador 1 - 1000</p>
-        <p id="recorde2">2. Jogador 2 - 500</p>
-        <p id="recorde3">3. Jogador 3 - 250</p>
+    <div id="score-box">
+      <p id="pontuacao">Pontuação: 0</p>
     </div>
-    <div id="next-piece-container">
-        <canvas id="next-piece" width="100" height="100"></canvas>
-    </div>
-    
     <div id="name-input-container">
-        <input type="text" id="player-name" placeholder="Seu nome">
-        <button id="save-name">Salvar</button>
+      <input type="text" id="player-name" placeholder="Seu nome">
+      <button id="save-name">Salvar</button>
     </div>
     <button id="btnpause" class="control-button">Pausar</button>
     <div class="control-buttons">
-        <button id="btnesq" class="control-button">⟲</button>
-        <button id="btnleft" class="control-button">←</button>
-        <button id="btndown" class="control-button">↓</button>
-        <button id="btnright" class="control-button">→</button>
-        <button id="btndir" class="control-button">⟳</button>
+      <button id="btnesq" class="control-button">⟲</button>
+      <button id="btnleft" class="control-button">←</button>
+      <button id="btndown" class="control-button">↓</button>
+      <button id="btnright" class="control-button">→</button>
+      <button id="btndir" class="control-button">⟳</button>
     </div>
-
-    <!-- Adicione os scripts do Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
-    <script>
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYNEco78gDJMUo_B-PsrSQrPoc5Bm6fCA",
-            authDomain: "ucptetris.firebaseapp.com",
-            projectId: "ucptetris",
-            storageBucket: "ucptetris.appspot.com",
-            messagingSenderId: "133247975489",
-            appId: "1:133247975489:web:8ca132b30afc5e56c406c0",
-            measurementId: "G-KRW120LFTS"
-        };
-
-        // Inicializar o Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-    </script>
-    <script src="tetris.js"></script>
+    <div id="sobre">
+      <a href="about.html">Sobre</a>
+    </div>
+  </div>
 </body>
 </html>
