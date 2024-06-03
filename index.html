@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetris</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="icone.ico" type="x-icon"> 
 </head>
 <body>
   <div class="container">
-    <h1>Tetris</h1>
+    <div id="logo-container">
+      <img src="logo.gif" alt="Logo" id="logo">
+    </div>
     <p>Clique no botão abaixo para iniciar o jogo!</p>
     <button onclick="window.location.href='game.html'">Jogar</button>
     <div id="sobre">
@@ -16,7 +19,7 @@
     </div>
   </div>
 
-  <!-- Adicione os scripts do Firebase SDK -->
+  <!-- scripts do Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
   <script>
