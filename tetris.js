@@ -149,6 +149,11 @@ class Tabuleiro {
             }
             if (completa) {
                 linhasRemovidas++;
+                const lineClearSound = document.getElementById('line-clear-sound');
+                if (lineClearSound) {
+                    lineClearSound.currentTime = 0; // Reinicia o áudio
+                    lineClearSound.play(); // Toca o som
+                }
                 for (let k = i; k > 0; k--) {
                     for (let j = 0; j < this.colunas; j++) {
                         this.valores[k][j] = this.valores[k-1][j];
@@ -326,8 +331,13 @@ document.addEventListener('DOMContentLoaded', () => {
     t.marcarPeca(x, y, p);
     t.desenharTabuleiro(ctx);
     atualizarTabelaRecordes();
-});
 
+    // Inicia a música de fundo
+    const audio = document.getElementById('background-music');
+    audio.play().catch(error => {
+        console.error("Erro ao iniciar a música:", error);
+    });
+});
 document.getElementById('btnpause').addEventListener('click', () => {
     if (gameOver) return; // Se o jogo já estiver encerrado, não faz nada
     const pauseButton = document.getElementById('btnpause');
@@ -468,3 +478,4 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+

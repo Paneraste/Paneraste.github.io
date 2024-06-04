@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=0.51, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=0.6, user-scalable=no">
   <title>Tetris</title>
-  <link rel="stylesheet" href="stylesG.css">
+  <link rel="stylesheet" href="stylescel.css" media="screen and (max-width: 768px)">
+  <link rel="stylesheet" href="stylesG.css" media="screen and (min-width: 769px)">
   <script type="module" src="tetris.js"></script>
   <link rel="icon" href="icone.ico" type="x-icon"> 
+  <audio id="background-music" src="01.mp3" loop></audio>
+  <audio id="line-clear-sound" src="clear-line.mp3" preload="auto"></audio>
 </head>
 <body>
   <div id="particle-background"></div>
@@ -18,18 +21,27 @@
     <p id="recorde2">2. Jogador 2 - 000</p>
     <p id="recorde3">3. Jogador 3 - 000</p>
   </div>
+  <div id="instru">
+    <img src="instru.png" alt="instru" id="imginstru">
+    <div id="sobre">
+      <a href="about.html">Sobre</a>
+    </div>
+  </div>
+  <div id="score-box">
+    <p id="pontuacao">Pontuação: 0</p>
+  </div>
   <div class="container">
     <div id="canvas-container">
       <canvas id="game-board" width="300" height="600"></canvas>
-    </div>
-    <div id="score-box">
-      <p id="pontuacao">Pontuação: 0</p>
     </div>
     <div id="name-input-container">
       <input type="text" id="player-name" placeholder="Seu nome">
       <button id="save-name">Salvar</button>
     </div>
     <button id="btnpause" class="control-button">Pausar</button>
+  </div>
+</body>
+<footer>
     <div class="control-buttons">
       <button id="btnesq" class="control-button">⟲</button>
       <button id="btnleft" class="control-button">←</button>
@@ -37,9 +49,5 @@
       <button id="btnright" class="control-button">→</button>
       <button id="btndir" class="control-button">⟳</button>
     </div>
-    <div id="sobre">
-      <a href="about.html">Sobre</a>
-    </div>
-  </div>
-</body>
+</footer>
 </html>

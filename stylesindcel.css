@@ -45,7 +45,7 @@ button:hover {
 }
 
 #logo {
-  width: 600px; /* Ajuste o tamanho conforme necessário */
+  width: 300px; /* Ajuste o tamanho conforme necessário */
   animation: heartbeat 1s infinite;
 }
 
